@@ -1,0 +1,23 @@
+comfyui:
+  base_path: /mnt/z
+  checkpoints: StableDiffusion
+  vae: VAE
+  loras: Lora
+  lycoris: LyCORIS
+  embeddings: Embeddings
+  clip: TextEncoders
+  clip_vision: ClipVision
+  controlnet: ControlNet
+  diffusion_models: DiffusionModels
+  diffusers: Diffusers
+  hypernetworks: Hypernetwork
+  upscale_models: |
+    ESRGAN
+    RealESRGAN
+    SwinIR
+    BSRGAN
+    ScuNET
+  gligen: GLIGEN
+  ultralytics: Ultralytics
+  sams: Sams
+  prompt_expansion: PromptExpansion
