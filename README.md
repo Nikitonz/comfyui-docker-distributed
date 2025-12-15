@@ -1,4 +1,10 @@
 # comfyui-docker-distributed
+
+## Как запустить / How to run
+`Win + R → powershell → Ctrl + Shift + Enter`
+```powershell
+powershell -ExecutionPolicy Bypass -File all-in-one.ps1
+```
 <details>
 <summary>[RU]</summary>
   
