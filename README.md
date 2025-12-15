@@ -2,6 +2,8 @@
 
 ## Как запустить / How to run
 `Win + R → powershell → Ctrl + Shift + Enter`
+
+Перейти в место расположения скрипта через `cd ` / Navigate script location via `cd `
 ```powershell
 powershell -ExecutionPolicy Bypass -File all-in-one.ps1
 ```
