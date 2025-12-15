@@ -12,6 +12,7 @@ Write-Host $SCRIPT_DIR
 #  SETUP WSL2 + UBUNTU 24.04 + NVIDIA GPU SUPPORT
 #  Script must be run as Administrator
 # ==========================================================
+
 Write-Host "=== Enabling Windows features: WSL + VirtualMachinePlatform ==="
 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
 dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
@@ -34,6 +35,7 @@ wsl -d $DISTRO -- echo "Your selected distro is ready-to-go"
 # ----------------------------------------------------------
 # Copy utilities from repo  on host to wsl mashine
 # ----------------------------------------------------------
+
 wsl -d $DISTRO -- bash -c "mkdir -p $WSL_TARGET_DIR"
 tar -C "$SCRIPT_DIR" -cf - . --exclude=all_in_one.ps1 --exclude=.git --exclude=.vscode | `
 wsl -d $DISTRO -- bash -c "cd $WSL_TARGET_DIR && tar -xf -" 
@@ -44,6 +46,7 @@ chmod +x ./*.sh
 # ----------------------------------------------------------
 # Ubuntu commands executed via WSL
 # ----------------------------------------------------------
+
 Write-Host "=== Updating Ubuntu system packages ==="
 wsl -d $DISTRO -- sudo apt update
 wsl -d $DISTRO -- sudo apt upgrade -y
@@ -109,5 +112,12 @@ try {
 catch {
     Write-Host "ERROR: Docker cannot access NVIDIA GPU."
 }
+
+wsl -d $DISTRO -- bash -c "
+cd $WSL_TARGET_DIR &&
+./build_image.sh &&
+./run_comfy_headless.sh
+"
+
 
 Write-Host "=== Setup completed ==="
