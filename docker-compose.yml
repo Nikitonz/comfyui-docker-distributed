@@ -3,7 +3,6 @@ x-comfy-common: &comfy-common
   build:
     context: .
     dockerfile: ComfyuiTorch
-  container_name: ${CONTAINER_NAME:-comfyui}
   restart: ${DOCKER_RESTART:-unless-stopped}
   gpus: all
   ports:
