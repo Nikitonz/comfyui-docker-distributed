@@ -1,17 +1,34 @@
+x-comfy-common: &comfy-common
+  image: ${COMFY_IMAGE:-comfyui:torch2.9}
+  build:
+    context: .
+    dockerfile: ComfyuiTorch
+  container_name: ${CONTAINER_NAME:-comfyui}
+  restart: ${DOCKER_RESTART:-unless-stopped}
+  gpus: all
+  ports:
+    - "${HOST_BIND_IP:-0.0.0.0}:${COMFY_PORT:-8188}:${COMFY_PORT:-8188}"
+  environment:
+    EXTRA_MODEL_PATHS: ${EXTRA_MODEL_PATHS:-/mnt/z}
+  command: >
+    bash -lc "python main.py --listen ${COMFY_LISTEN_IP:-0.0.0.0}
+    --port ${COMFY_PORT:-8188}
+    ${COMFY_EXTRA_ARGS:---enable-cors-header}"
+
 services:
   comfyui:
-    image: ${COMFY_IMAGE:-comfyui:torch2.9}
-    container_name: ${CONTAINER_NAME:-comfyui}
-    restart: ${DOCKER_RESTART:-unless-stopped}
-    gpus: all
-    ports:
-      - "${HOST_BIND_IP:-0.0.0.0}:${COMFY_PORT:-8188}:${COMFY_PORT:-8188}"
+    <<: *comfy-common
+    profiles: ["off"]
+
+  comfyui_smb:
+    <<: *comfy-common
+    profiles: ["smb"]
     volumes:
-      - "${COMFY_MODELS_VOLUME:-/mnt/z:/mnt/z}"
-    environment:
-      EXTRA_MODEL_PATHS: ${EXTRA_MODEL_PATHS:-/mnt/z}
-    command: >
-      bash -lc "python main.py --listen ${COMFY_LISTEN_IP:-0.0.0.0} --port ${COMFY_PORT:-8188} ${COMFY_EXTRA_ARGS:---enable-cors-header}"
+      - type: volume
+        source: comfy_models_smb
+        target: /mnt/z
+        volume:
+          nocopy: true
 
 volumes:
   comfy_models_smb:
@@ -19,5 +36,5 @@ volumes:
     driver: local
     driver_opts:
       type: cifs
+      o: "username=${SMB_USERNAME},password=${SMB_PASSWORD},uid=${SMB_UID:-1000},gid=${SMB_GID:-1000},vers=${SMB_VERSION:-3.0}${SMB_DOMAIN_OPT:+,domain=${SMB_DOMAIN_OPT}}${SMB_MOUNT_FLAGS:+,${SMB_MOUNT_FLAGS}}"
       device: "//${SMB_SERVER}/${SMB_SHARE}"
-      o: "username=${SMB_USERNAME},password=${SMB_PASSWORD},vers=${SMB_VERSION:-3.0},uid=${SMB_UID:-1000},gid=${SMB_GID:-1000},file_mode=0644,dir_mode=0755,${SMB_MOUNT_FLAGS:-ro}${SMB_DOMAIN_OPT:-}"
