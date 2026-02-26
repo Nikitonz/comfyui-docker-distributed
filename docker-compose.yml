@@ -1,0 +1,14 @@
+services:
+  comfyui:
+    image: ${COMFY_IMAGE:-comfyui:torch2.9}
+    container_name: ${CONTAINER_NAME:-comfyui}
+    restart: ${DOCKER_RESTART:-unless-stopped}
+    gpus: all
+    ports:
+      - "${HOST_BIND_IP:-0.0.0.0}:${COMFY_PORT:-8188}:${COMFY_PORT:-8188}"
+    volumes:
+      - "${MODEL_MOUNT_SOURCE:-/mnt/z}:${MODEL_MOUNT_TARGET:-/mnt/z}"
+    environment:
+      EXTRA_MODEL_PATHS: ${EXTRA_MODEL_PATHS:-/mnt/z}
+    command: >
+      bash -lc "python main.py --listen ${COMFY_LISTEN_IP:-0.0.0.0} --port ${COMFY_PORT:-8188} ${COMFY_EXTRA_ARGS:---enable-cors-header}"
