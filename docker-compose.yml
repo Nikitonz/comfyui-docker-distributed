@@ -7,8 +7,17 @@ services:
     ports:
       - "${HOST_BIND_IP:-0.0.0.0}:${COMFY_PORT:-8188}:${COMFY_PORT:-8188}"
     volumes:
-      - "${MODEL_MOUNT_SOURCE:-/mnt/z}:${MODEL_MOUNT_TARGET:-/mnt/z}"
+      - "${COMFY_MODELS_VOLUME:-/mnt/z:/mnt/z}"
     environment:
       EXTRA_MODEL_PATHS: ${EXTRA_MODEL_PATHS:-/mnt/z}
     command: >
       bash -lc "python main.py --listen ${COMFY_LISTEN_IP:-0.0.0.0} --port ${COMFY_PORT:-8188} ${COMFY_EXTRA_ARGS:---enable-cors-header}"
+
+volumes:
+  comfy_models_smb:
+    name: ${SMB_VOLUME_NAME:-comfy_models_smb}
+    driver: local
+    driver_opts:
+      type: cifs
+      device: "//${SMB_SERVER}/${SMB_SHARE}"
+      o: "username=${SMB_USERNAME},password=${SMB_PASSWORD},vers=${SMB_VERSION:-3.0},uid=${SMB_UID:-1000},gid=${SMB_GID:-1000},file_mode=0644,dir_mode=0755,${SMB_MOUNT_FLAGS:-ro}${SMB_DOMAIN_OPT:-}"
